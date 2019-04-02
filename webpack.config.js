@@ -1,6 +1,10 @@
 const HtmlWebPackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 module.exports = {
+	devServer: {
+		contentBase: './dist'
+	},
 	module: {
 		rules: [
 			{
@@ -20,8 +24,35 @@ module.exports = {
 				]
 			},
 			{
-				test: /\.css$/,
-				use: [MiniCssExtractPlugin.loader, 'css-loader']
+				test: /\.scss$/,
+				use: [{
+					loader: MiniCssExtractPlugin.loader
+				}, {
+					loader: 'css-loader',
+					options: {
+						sourceMap: true
+					}
+				}, {
+					loader: 'postcss-loader',
+					options: {
+						sourceMap: true,
+						plugins: loader => [
+						  require('autoprefixer')({
+                            browsers: [
+                                'last 10 Chrome versions',
+                                'last 5 Firefox versions',
+                                'Safari >= 6',
+                                'ie > 8'
+                            ]
+                          })
+						]
+					}
+				}, {
+					loader: 'sass-loader',
+					options: {
+						sourceMap: true
+					}
+				}]
 			}
 		]
 	},
@@ -31,8 +62,21 @@ module.exports = {
 			filename: './index.html'
 		}),
 		new MiniCssExtractPlugin({
-			filename: '[name].css',
+			filename: 'styles.css',
 			chunkFilename: '[id].css'
 		})
-	]
+	],
+	optimization: {
+		minimizer: [
+		 new OptimizeCSSAssetsPlugin({
+		 	cssProcessor: require('cssnano'),
+			    cssProcessorOptions: {
+			        discardComments: { removeAll: true },
+			        // 避免 cssnano 重新计算 z-index
+			        safe: true,
+			        autoprefixer: false
+			    },
+		    }),
+		]
+	}
 };
