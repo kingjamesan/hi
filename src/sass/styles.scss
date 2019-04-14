@@ -1,2 +1,5 @@
-@import './pages/main.scss';
+@import '~normalize.css';
+
+@import './pages/layout.scss';
+@import './pages/chatbox.scss';
 @import './pages/sidebar.scss';
