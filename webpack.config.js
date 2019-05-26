@@ -1,3 +1,4 @@
+const path = require("path");
 const HtmlWebPackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
@@ -8,21 +9,20 @@ module.exports = {
   module: {
     rules: [
       {
+        test: /\.(js|vue)$/,
+        loader: "eslint-loader",
+        enforce: "pre",
+        include: [path.join(__dirname, "src")],
+        options: {
+          fix: true
+        }
+      },
+      {
         test: /\.js$/,
         exclude: /node_modules/,
-        use: [
-          {
-            loader: "eslint-loader",
-            enforce: "pre",
-            include: [path.join(__dirname, "src")],
-            options: {
-              fix: true
-            }
-          },
-          {
-            loader: "babel-loader"
-          }
-        ]
+        use: {
+          loader: "babel-loader"
+        }
       },
       {
         test: /\.html$/,
